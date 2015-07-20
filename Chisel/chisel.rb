@@ -5,74 +5,74 @@
   # writer.close
 
 class Chisel
-  attr_accessor :markdown_string
+  attr_accessor :markdown_input
 
-  def initialize (markdown_string = '')
-    @markdown_string = markdown_string
+  def initialize (markdown_input = '')
+    @markdown_input = markdown_input
   end
 
   def chunk
     @all_chunks = []
-    @all_chunks = markdown_string.split("\n\n")
+    @all_chunks = markdown_input.split("\n\n")
   end
 
-  def header(chunked_thing)
-    if chunked_thing.include? "######"
-      chunked_thing.sub!("######", "<h6>").concat("</h6>")
-    elsif chunked_thing.include? "#####"
-      chunked_thing.sub!("#####", "<h5>").concat("</h5>")
-    elsif chunked_thing.include? "####"
-      chunked_thing.sub!("####", "<h4>").concat("</h4>")
-    elsif chunked_thing.include? "###"
-      chunked_thing.sub!("###", "<h3>").concat("</h3>")
-    elsif chunked_thing.include? "##"
-      chunked_thing.sub!("##", "<h2>").concat("</h2>")
-    elsif chunked_thing.include? "#"
-      chunked_thing.sub!("#", "<h1>").concat("</h1>")
+  def header(chunk)
+    if chunk.include? "######"
+      chunk.sub!("######", "<h6>").concat("</h6>")
+    elsif chunk.include? "#####"
+      chunk.sub!("#####", "<h5>").concat("</h5>")
+    elsif chunk.include? "####"
+      chunk.sub!("####", "<h4>").concat("</h4>")
+    elsif chunk.include? "###"
+      chunk.sub!("###", "<h3>").concat("</h3>")
+    elsif chunk.include? "##"
+      chunk.sub!("##", "<h2>").concat("</h2>")
+    elsif chunk.include? "#"
+      chunk.sub!("#", "<h1>").concat("</h1>")
     else
-      "<p>\n#{chunked_thing}\n</p>"
+      "<p>\n#{chunk}\n</p>"
     end
   end
 
-  def format(chunked_thing)
-    chunked_array = chunked_thing.chars
-    formatted_string = ""
+  def format(chunk)
+    whole_chunk = chunk.chars
+    formatted = ""
     need_to_close_em = false
     need_to_close_strong = false
-    chunked_array.each_index do |index|
-      char = chunked_array[index]
-      next_char = chunked_array[index+1]
-      previous_char = chunked_array[index-1]
-      remaining_strong = chunked_array[index+1..-1].join.include? '**'
-      remaining_em = chunked_array[index+1..-1].include? '*'
+    whole_chunk.each_index do |index|
+      char = whole_chunk[index]
+      next_char = whole_chunk[index+1]
+      previous_char = whole_chunk[index-1]
+      remaining_strong_tag = whole_chunk[index+1..-1].join.include? '**'
+      remaining_em_tag = whole_chunk[index+1..-1].include? '*'
 
       if char == "*" && previous_char == "*" && index != 0
       elsif char == "*" && next_char == "*"
-        if need_to_close_strong == false && remaining_strong == true
+        if need_to_close_strong == false && remaining_strong_tag == true
           need_to_close_strong = true
-          formatted_string << "<strong>"
+          formatted << "<strong>"
         elsif need_to_close_strong == true
           need_to_close_strong = false
-          formatted_string << "</strong>"
+          formatted << "</strong>"
         else
-          formatted_string << '**'
+          formatted << '**'
         end
-      elsif char == "*" && need_to_close_em == false && remaining_em == true
+      elsif char == "*" && need_to_close_em == false && remaining_em_tag == true
         need_to_close_em = true
-        formatted_string << "<em>"
+        formatted << "<em>"
       elsif char == "*" && need_to_close_em == true
         need_to_close_em = false
-        formatted_string << "</em>"
+        formatted << "</em>"
       else
-        formatted_string << char
+        formatted << char
       end
     end
-    formatted_string
+    formatted
   end
 
-  def make_list(chunked_thing)
-    if chunked_thing.start_with? "* "
-      chunked_thing.sub("* ", "<ul>\n  <li>").concat("</li>\n</ul>")
+  def make_list(chunk)
+    if chunk.start_with? "* "
+      chunk.sub("* ", "<ul>\n  <li>").concat("</li>\n</ul>")
     end
   end
 end
